@@ -3,27 +3,27 @@
 ![](https://github.com/lKinderBueno/Streamity-Xtream-IPTV-Web-player/raw/master/github-pic/top.png)
 
 [![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://github.com/lKinderBueno/StreamityTV-Xtream)
-[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=CVT6HXLZ3YNSG&source=url)
-
 
 ### Official Streamity.tv website: [Click here](https://streamity.tv)
 
-Streamity is an online webplayer. Watch IPTV Channels, movies TV series online on your browser with no additional software required!
+Streamity is an online web player.  
+Play your Xtream API playlists and media libraries directly in your browser, with no additional software required.
 
-### DISCLAIMER: Streamity is a player. No stream or movies is included. Pictures are just for demo purpouse.
+### DISCLAIMER
+Streamity is a playlist player. No media content is provided or included. Images are for demonstration purposes only.
 
 ### Features
-- Xtream Api support
+- Playlist support (including Xtream API)
 - Customizable name and logo
-- Modern design and smooth animations
-- EPG Viewer
-- 12h/24h EPG time format support
-- Pic in picture player
-- Automatic fix and improve movie and series name
+- Modern UI and smooth animations
+- Guide & metadata view
+- 12h/24h time format support
+- Picture-in-Picture mode
+- Automatic cleanup and normalization of titles
 - Favorites
-- Continue to watch for vod and series
-- Automatic select next series episode
-- React js
+- Resume playback
+- Auto-play next episode
+- Built with React.js
 
 ### Other Pictures
 ![](https://github.com/lKinderBueno/Streamity-Xtream-IPTV-Web-player/raw/master/github-pic/channels.png?1)
