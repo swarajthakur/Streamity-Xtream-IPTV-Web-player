@@ -61,9 +61,9 @@ export default function MainMenu() {
         }}
       />
 
-      {/* Content — fits in one viewport height on standard displays */}
-      <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-6xl flex-col px-6 pt-24 md:px-10 md:pt-28">
-        <section className="flex flex-1 flex-col justify-center pb-8">
+      {/* Content — top-anchored, no centered free space */}
+      <div className="relative z-10 mx-auto w-full max-w-6xl px-6 pt-24 md:px-10 md:pt-28">
+        <section className="pb-8">
           <img
             src="/img/streamify-logo.svg"
             alt="Streamify"
