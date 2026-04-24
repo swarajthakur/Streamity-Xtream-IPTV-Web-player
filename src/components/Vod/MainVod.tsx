@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Route, Switch, useHistory, useLocation, useParams } from 'react-router-dom';
 import { Info, Play, Search as SearchIcon } from 'lucide-react';
+import { lookupMovie, lookupSeries, type TmdbInfo } from '@/other/tmdb-lookup';
 
 import { useDispatch, useSelector } from '@/store/legacy';
 import { setPlaylist } from '../../actions/set-Playlist';
@@ -187,6 +188,9 @@ export default function MainVod() {
                 title={item.name}
                 image={item.stream_icon || item.cover}
                 onClick={() => gotoDetail(item)}
+                kind={isSeries ? 'series' : 'movie'}
+                streamId={isSeries ? item.series_id : item.stream_id}
+                tmdbHint={item.tmdb}
               />
             ))}
           </div>
@@ -203,6 +207,9 @@ export default function MainVod() {
                     title={item.name}
                     image={item.stream_icon || item.cover}
                     onClick={() => gotoDetail(item)}
+                    kind={isSeries ? 'series' : 'movie'}
+                    streamId={isSeries ? item.series_id : item.stream_id}
+                    tmdbHint={item.tmdb}
                   />
                 ))}
               </Rail>
@@ -273,6 +280,20 @@ interface HeroProps {
 
 function VodHero({ item, isSeries, onInfo }: HeroProps) {
   const history = useHistory();
+  const [tmdb, setTmdb] = useState<TmdbInfo | null>(null);
+
+  useEffect(() => {
+    const id = isSeries ? item.series_id : item.stream_id;
+    const fn = isSeries ? lookupSeries : lookupMovie;
+    let cancelled = false;
+    fn(id, item.name, item.tmdb).then((res) => {
+      if (!cancelled && res?.info) setTmdb(res.info);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [item.stream_id, item.series_id, item.name, isSeries, item.tmdb]);
+
   const playUrl = (() => {
     const id = isSeries ? item.series_id : item.stream_id;
     const cat = item.category_id || 'all';
@@ -280,17 +301,32 @@ function VodHero({ item, isSeries, onInfo }: HeroProps) {
     return `/movie/category/${cat}/${id}/play/`;
   })();
 
-  const bg = item.stream_icon || item.cover;
+  const bg =
+    tmdb?.backdrop_path?.[0] || tmdb?.cover || tmdb?.image || item.stream_icon || item.cover;
+  const trailer = tmdb?.youtube_trailer;
+  const displayName = tmdb?.name || item.name;
 
   return (
     <section className="relative h-[60vh] min-h-[360px] w-full overflow-hidden">
-      {bg && (
-        <img
-          src={bg}
-          alt=""
-          className="absolute inset-0 h-full w-full object-cover opacity-60"
-          style={{ filter: 'blur(18px) saturate(120%)', transform: 'scale(1.1)' }}
-        />
+      {trailer ? (
+        <div className="absolute inset-0 overflow-hidden">
+          <iframe
+            title={displayName}
+            src={`https://www.youtube-nocookie.com/embed/${trailer}?autoplay=1&mute=1&loop=1&controls=0&modestbranding=1&showinfo=0&rel=0&iv_load_policy=3&playlist=${trailer}`}
+            allow="autoplay; encrypted-media; picture-in-picture"
+            className="absolute left-1/2 top-1/2 aspect-video h-[140%] w-[140%] -translate-x-1/2 -translate-y-1/2 border-0"
+            style={{ pointerEvents: 'none' }}
+          />
+        </div>
+      ) : (
+        bg && (
+          <img
+            src={bg}
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover opacity-60"
+            style={{ filter: 'blur(18px) saturate(120%)', transform: 'scale(1.1)' }}
+          />
+        )
       )}
       <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/60 to-transparent" />
       <div className="absolute inset-0 bg-gradient-to-r from-neutral-950/85 via-neutral-950/30 to-transparent" />
@@ -302,8 +338,13 @@ function VodHero({ item, isSeries, onInfo }: HeroProps) {
               <span className="size-1.5 rounded-full bg-brand" /> Featured
             </div>
             <h1 className="text-4xl font-black leading-tight tracking-tight text-white drop-shadow-lg md:text-6xl">
-              {item.name}
+              {displayName}
             </h1>
+            {tmdb?.description && (
+              <p className="mt-3 line-clamp-2 max-w-xl text-sm text-neutral-200 drop-shadow md:text-base">
+                {tmdb.description}
+              </p>
+            )}
             <div className="mt-6 flex flex-wrap gap-3">
               <Button size="lg" onClick={() => history.push(playUrl)}>
                 <Play className="fill-current" /> {isSeries ? 'Details' : 'Play'}

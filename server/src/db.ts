@@ -22,6 +22,14 @@ db.exec(`
 
   CREATE INDEX IF NOT EXISTS idx_epg_stop  ON epg_data (stop_timestamp);
   CREATE INDEX IF NOT EXISTS idx_epg_range ON epg_data (id, start_timestamp, stop_timestamp);
+
+  CREATE TABLE IF NOT EXISTS tmdb_cache (
+    key         TEXT PRIMARY KEY,
+    body        TEXT NOT NULL,
+    status      INTEGER NOT NULL DEFAULT 200,
+    fetched_at  INTEGER NOT NULL
+  );
+  CREATE INDEX IF NOT EXISTS idx_tmdb_fetched_at ON tmdb_cache (fetched_at);
 `);
 
 export const queries = {
@@ -41,5 +49,14 @@ export const queries = {
        FROM epg_data
       WHERE id = ? AND start_timestamp < ? AND stop_timestamp >= ?
       ORDER BY start_timestamp`
+  ),
+  tmdbGet: db.prepare<[string]>(
+    `SELECT body, status, fetched_at FROM tmdb_cache WHERE key = ?`
+  ),
+  tmdbPut: db.prepare<[string, string, number, number]>(
+    `INSERT OR REPLACE INTO tmdb_cache (key, body, status, fetched_at) VALUES (?, ?, ?, ?)`
+  ),
+  tmdbPrune: db.prepare<[number]>(
+    `DELETE FROM tmdb_cache WHERE fetched_at < ?`
   ),
 };
