@@ -131,7 +131,7 @@ const NavBar = () => {
         <Nav className="navbar" style={{display : fullScreen ? "none" : ""}}>
             <div className="container-fluid">
                 <Link className="navbar-brand" to="/">
-                    <img src="/img/banner_w.png" alt="" height="20rem" className="d-inline-block align-top"/>
+                    <img src="/img/streamify-logo.svg" alt="Streamify" height="20rem" className="d-inline-block align-top"/>
                 </Link>
             </div>
             <ContainerButton>

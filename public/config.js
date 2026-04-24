@@ -1,5 +1,5 @@
 /*----- Player name -----*/
-window.playername = "Streamity Web Player";
+window.playername = "Streamify";
 
 /*----- DNS -----*/
 //Iptv provider dns url (for example "http://domain.com:80")

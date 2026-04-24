@@ -84,7 +84,7 @@ try {
                 'content' => $post_data,
                 'header'  => "Content-Type: application/json\r\n" .
                             "Accept: application/json\r\n" .
-                            "User-Agent: StreamityProxy/1.0\r\n",
+                            "User-Agent: StreamifyProxy/1.0\r\n",
                 'timeout' => $timeout,
                 'ignore_errors' => false,
                 'follow_location' => 0 // Prevent redirect attacks
@@ -99,7 +99,7 @@ try {
                 'timeout' => $timeout,
                 'ignore_errors' => false,
                 'follow_location' => 0, // Prevent redirect attacks
-                'header'  => "User-Agent: StreamityProxy/1.0\r\n"
+                'header'  => "User-Agent: StreamifyProxy/1.0\r\n"
             )
         );
         $context = stream_context_create($options);

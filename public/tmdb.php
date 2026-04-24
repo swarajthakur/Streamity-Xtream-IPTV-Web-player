@@ -44,7 +44,7 @@ $ctx = stream_context_create([
         'timeout'         => 20,
         'follow_location' => 0,
         'ignore_errors'   => true,
-        'header'          => "User-Agent: StreamityTmdbProxy/1.0\r\nAccept: application/json\r\n"
+        'header'          => "User-Agent: StreamifyTmdbProxy/1.0\r\nAccept: application/json\r\n"
     ]
 ]);
 
