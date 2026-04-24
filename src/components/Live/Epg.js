@@ -3,7 +3,7 @@ import styled from "styled-components"
 import PulsingDot from "./PulsingDot"
 import {useSelector} from "react-redux"
 
-const dateFormat = require("dateformat");
+import dateFormat from "dateformat";
 
 const EpgTitle = styled.div`
 padding-left: 1rem!important;

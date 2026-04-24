@@ -4,7 +4,7 @@ import ChannelEpgBar from "./ChannelEpgBar"
 import {getSingleEpgNow, downloadEpgData} from "../../other/epg-database"
 import {useSelector} from "react-redux"
 
-const dateFormat = require("dateformat");
+import dateFormat from "dateformat";
 
 const EpgChName = styled.div`
     position: absolute;

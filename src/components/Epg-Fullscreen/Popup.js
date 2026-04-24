@@ -6,7 +6,7 @@ import focusElement from "../../other/focused-element"
 import {setPlayingChannel} from "../../actions/playingChannel"
 import {useHistory, useLocation} from "react-router-dom"
 
-const dateFormat = require("dateformat");
+import dateFormat from "dateformat";
 
 const Container = styled.div`
 position:absolute;

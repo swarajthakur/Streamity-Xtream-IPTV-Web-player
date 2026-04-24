@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import {useSelector, useDispatch} from "react-redux"
 import {setEpgPopup} from "../../actions/epgPopup"
 
-const dateFormat = require("dateformat");
+import dateFormat from "dateformat";
 
 const Container = styled.li`
 position: absolute;

@@ -2,7 +2,7 @@ import styled from 'styled-components'
 import {useSelector} from "react-redux"
 import React from "react"
 
-const dateFormat = require("dateformat");
+import dateFormat from "dateformat";
 
 const Container = styled.div`
 z-index: 10000000000000;

@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import {useSelector} from "react-redux"
 
-const dateFormat = require("dateformat");
+import dateFormat from "dateformat";
 
 const Container = styled.li`
 position: absolute;
