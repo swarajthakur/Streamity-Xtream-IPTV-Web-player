@@ -62,9 +62,9 @@ export function useProvideAuth() {
 
   const authLogin = (fallback) =>{
 
-    const envDns = process.env.REACT_APP_XTREAM_DNS;
-    const envUser = process.env.REACT_APP_XTREAM_USERNAME;
-    const envPass = process.env.REACT_APP_XTREAM_PASSWORD;
+    const envDns = import.meta.env.VITE_XTREAM_DNS ?? import.meta.env.REACT_APP_XTREAM_DNS;
+    const envUser = import.meta.env.VITE_XTREAM_USERNAME ?? import.meta.env.REACT_APP_XTREAM_USERNAME;
+    const envPass = import.meta.env.VITE_XTREAM_PASSWORD ?? import.meta.env.REACT_APP_XTREAM_PASSWORD;
 
     const dns = envDns || (window.dns.length === 0 && Cookies.get("dns")) || undefined;
     const username = envUser || Cookies.get("username");

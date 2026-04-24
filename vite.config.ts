@@ -14,6 +14,8 @@ export default defineConfig({
     }),
     tailwindcss(),
   ],
+  // Legacy CRA convention — expose REACT_APP_* env vars alongside VITE_*.
+  envPrefix: ['VITE_', 'REACT_APP_'],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),

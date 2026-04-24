@@ -1,8 +1,8 @@
 import {optimizeName, secondsToHms, createMovieInfo, createEpisode} from "./vod-series-name-optimizer"
 import * as axios from "./axios";
 
-const TMDB_USE_PROXY = process.env.REACT_APP_TMDB_USE_PROXY === "true";
-const TMDB_ENV_KEY = process.env.REACT_APP_TMDB_API_KEY || "";
+const TMDB_USE_PROXY = (import.meta.env.VITE_TMDB_USE_PROXY ?? import.meta.env.REACT_APP_TMDB_USE_PROXY) === "true";
+const TMDB_ENV_KEY = (import.meta.env.VITE_TMDB_API_KEY ?? import.meta.env.REACT_APP_TMDB_API_KEY) || "";
 
 function tmdbKey() {
     return TMDB_ENV_KEY || window.tmdb || "";
