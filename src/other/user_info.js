@@ -16,12 +16,14 @@ export function setInfo(data, serverInfo){
 
     // Kick off EPG ingest on the Node backend so the cache is warm by the time
     // the user lands in Live TV. Fire-and-forget; failures surface as "No EPG".
-    Axios.post("/api/epg", new URLSearchParams({
+    // Third arg `true` tells the axios wrapper to POST to the local path
+    // (form-urlencoded) instead of appending to the provider DNS.
+    Axios.post("/api/epg", {
         init: "1",
         username: userInfo.username,
         password: userInfo.password,
         dns: `${serverInfo.server_protocol}://${serverInfo.url}:${serverInfo.port}`,
-    }).toString(), { headers: { "Content-Type": "application/x-www-form-urlencoded" } });
+    }, true);
 
     const cookieOpts = { expires: 365, sameSite: "strict", secure: window.location.protocol === "https:" };
     Cookies.set("username", data.username, cookieOpts);
