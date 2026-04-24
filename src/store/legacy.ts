@@ -7,9 +7,9 @@
  * to importing `useUiStore` directly. Once no component imports from
  * 'react-redux' anymore, delete the Vite alias and this file.
  */
+import { useRef, useSyncExternalStore, type ReactNode } from 'react';
 import { create } from 'zustand';
 import Cookies from 'js-cookie';
-import type { ReactNode } from 'react';
 
 // Action creators in src/actions/*.js return { type: string; payload: ... }
 // with plain string literals (not string literal types), so we keep this
@@ -78,9 +78,25 @@ export const useUiStore = create<StoreShape>((set, get) => ({
   },
 }));
 
-// react-redux drop-in shims.
+// react-redux drop-in shim. Legacy selectors frequently construct new
+// objects inline (e.g. `s => s.playingCh || { disabled: true }`). Plain
+// Zustand would re-evaluate on every render and each call returns a new
+// reference, tripping React's "getSnapshot should be cached" guard and
+// causing an infinite loop. Cache the result per state-reference so the
+// selector only runs when the store actually changes.
 export function useSelector<T>(selector: (state: LegacyState) => T): T {
-  return useUiStore(selector as (s: StoreShape) => T);
+  const memo = useRef<{ state?: StoreShape; selected?: T }>({});
+  const api = useUiStore;
+  const getSnapshot = () => {
+    const state = api.getState();
+    if (memo.current.state === state && 'selected' in memo.current) {
+      return memo.current.selected as T;
+    }
+    const selected = selector(state);
+    memo.current = { state, selected };
+    return selected;
+  };
+  return useSyncExternalStore(api.subscribe, getSnapshot, getSnapshot);
 }
 
 export function useDispatch() {
