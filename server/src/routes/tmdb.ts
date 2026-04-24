@@ -2,12 +2,12 @@ import type { FastifyInstance } from 'fastify';
 import { request } from 'undici';
 import { config } from '../config.js';
 
-// Allowlist matches tmdb.php — only read endpoints we actually use.
+// Allowlist — only TMDB read endpoints we actually use.
 const PATH_ALLOW = /^\/?3\/(search\/(movie|tv)|movie\/\d+|tv\/\d+(\/season\/\d+)?)\/?$/;
 const PARAM_ALLOW = new Set(['language', 'query', 'append_to_response', 'page']);
 
 export function registerTmdb(app: FastifyInstance) {
-  app.get('/tmdb.php', async (req, reply) => {
+  app.get('/api/tmdb', async (req, reply) => {
     if (!config.tmdbApiKey) {
       return reply.code(503).send({ error: 'TMDB proxy not configured' });
     }

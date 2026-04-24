@@ -20,13 +20,20 @@ cd ..
 npm run dev:server       # Fastify on http://localhost:8787
 ```
 
-The Vite dev server proxies `/proxy.php`, `/tmdb.php`, `/epg.php`, and
-`/epg-api.php` to `PHP_DEV_URL` (default `http://localhost:8000`). Point it
-at the Fastify server instead:
+The Vite dev server proxies `/api/*` to `BACKEND_URL` (default
+`http://localhost:8787`, which matches the Fastify server). Nothing else
+to wire up — just run both processes.
 
-```bash
-PHP_DEV_URL=http://localhost:8787 npm run dev
-```
+### What actually happens
+
+- Browser loads the React app from Vite on `:3006`.
+- App makes `POST /api/epg`, `GET /api/tmdb?...`, etc.
+- Vite's dev proxy forwards those `/api/*` requests to Fastify on `:8787`.
+- Fastify reads/writes SQLite, proxies TMDB/Xtream, ingests XMLTV.
+
+If you don't run the backend, `/api/*` calls fail and you'll see empty
+EPG, no TMDB metadata, and no proxy mode. Live TV still plays because
+that stream URL points at the provider directly, not at our API.
 
 ## Configuration
 
@@ -71,9 +78,7 @@ proxy tuning that keeps live channels playing smoothly in browsers.
 - `src/store/legacy.ts` is a Zustand-backed compatibility shim for
   `react-redux`. Vite aliases `react-redux` to it so legacy `useSelector` /
   `useDispatch` calls keep working until every component migrates.
-- The backend routes are deliberately mounted at the legacy `/proxy.php`,
-  `/tmdb.php`, `/epg.php` paths so the frontend needs zero rewrites during
-  the migration.
-- `public/proxy.php`, `tmdb.php`, `epg.php`, `epg-api.php`, `config.php`,
-  and `sql_table.sql` are superseded by `server/` and can be deleted once
-  you've confirmed the Node backend works against your provider.
+- Backend routes live under `/api/*` (`/api/proxy`, `/api/tmdb`,
+  `/api/epg`, `/api/healthz`). The frontend hits them through Vite's
+  dev proxy; in prod Fastify serves both the SPA and the API on the
+  same origin (see *Production* above).

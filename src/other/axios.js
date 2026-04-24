@@ -17,11 +17,8 @@ export async function post(url, params = {}, local, useProxy) {
 
     let uri = url
 
-    // Anything flagged `local` (e.g. /epg.php) stays local regardless of origin.
-    // The old code short-circuited on localhost to fall through to the provider;
-    // with the Node backend replacing the PHP files the local path is valid
-    // everywhere. Vite's dev proxy forwards /epg.php to PHP_DEV_URL (default
-    // http://localhost:8000 — set it to the Fastify server).
+    // Anything flagged `local` (e.g. /api/epg) stays local regardless of origin
+    // — Vite's dev proxy forwards /api/* to BACKEND_URL (the Fastify server).
     if (local === true) {
         return Axios.post(uri, qs.stringify(params)).catch(err => err)
     }
@@ -35,7 +32,7 @@ export async function post(url, params = {}, local, useProxy) {
     uri += "?" + parts.join("&");
 
     if ((proxyRequired || useProxy) === true)
-        uri = "/proxy.php?url=" + encodeURIComponent(dns + uri);
+        uri = "/api/proxy?url=" + encodeURIComponent(dns + uri);
     else
         uri = dns + uri;
 

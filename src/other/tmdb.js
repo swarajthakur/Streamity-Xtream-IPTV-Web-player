@@ -21,7 +21,7 @@ function tmdbUrl(path, params) {
     });
     if (TMDB_USE_PROXY) {
         qs.set("path", path);
-        return `/tmdb.php?${qs.toString()}`;
+        return `/api/tmdb?${qs.toString()}`;
     }
     qs.set("api_key", tmdbKey());
     return `https://api.themoviedb.org${path}?${qs.toString()}`;

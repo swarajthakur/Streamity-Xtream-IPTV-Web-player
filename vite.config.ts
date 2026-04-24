@@ -3,8 +3,9 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import path from 'node:path';
 
-// Local PHP dev server (if running): php -S localhost:8000 -t public
-const PHP_DEV = process.env.PHP_DEV_URL || 'http://localhost:8000';
+// Local backend (Fastify) URL. Start it with `npm run dev:server` from the
+// repo root; defaults to http://localhost:8787 — matches server/.env.example.
+const BACKEND_URL = process.env.BACKEND_URL || process.env.PHP_DEV_URL || 'http://localhost:8787';
 
 export default defineConfig({
   plugins: [
@@ -39,10 +40,7 @@ export default defineConfig({
   server: {
     port: 3006,
     proxy: {
-      '/proxy.php': PHP_DEV,
-      '/tmdb.php': PHP_DEV,
-      '/epg.php': PHP_DEV,
-      '/epg-api.php': PHP_DEV,
+      '/api': BACKEND_URL,
     },
   },
   build: {

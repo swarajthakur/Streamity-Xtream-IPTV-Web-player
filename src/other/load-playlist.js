@@ -26,7 +26,7 @@ export async function loadPlaylist(mode, group) {
 export async function loadEpg(epg_id, limit = 1) {
     let now = new Date();
 
-    return await axios.post("/epg.php", {
+    return await axios.post("/api/epg", {
         username: getInfo().username,
         password: getInfo().password,
         action: "get_simple_data_table",

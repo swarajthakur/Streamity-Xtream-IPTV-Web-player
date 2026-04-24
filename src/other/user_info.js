@@ -14,9 +14,14 @@ export function setInfo(data, serverInfo){
     userInfo.max_connections = data.max_connections;
     userInfo.message = data.message;
 
-    Axios.post("/epg.php",{init:1, username: userInfo.username, password: userInfo.password, 
-        dns: `${serverInfo.server_protocol}://${serverInfo.url}:${serverInfo.port}`
-    },true);
+    // Kick off EPG ingest on the Node backend so the cache is warm by the time
+    // the user lands in Live TV. Fire-and-forget; failures surface as "No EPG".
+    Axios.post("/api/epg", new URLSearchParams({
+        init: "1",
+        username: userInfo.username,
+        password: userInfo.password,
+        dns: `${serverInfo.server_protocol}://${serverInfo.url}:${serverInfo.port}`,
+    }).toString(), { headers: { "Content-Type": "application/x-www-form-urlencoded" } });
 
     const cookieOpts = { expires: 365, sameSite: "strict", secure: window.location.protocol === "https:" };
     Cookies.set("username", data.username, cookieOpts);

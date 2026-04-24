@@ -1,8 +1,7 @@
 # Streamify backend
 
-Fastify + better-sqlite3 replacement for the legacy PHP endpoints
-(`proxy.php`, `tmdb.php`, `epg.php`, `epg-api.php`). Routes are mounted at
-the same `.php` paths so the frontend needs zero changes.
+Fastify + better-sqlite3 service. Replaces the legacy PHP endpoints the
+old player shipped with. Routes live under `/api/*` (proxy, tmdb, epg).
 
 ## Quick start
 
@@ -14,16 +13,14 @@ npm install
 npm run dev
 ```
 
-Defaults to `http://localhost:8787`. The Vite dev server already proxies
-`/proxy.php`, `/tmdb.php`, `/epg.php`, and `/epg-api.php` to
-`PHP_DEV_URL` (default `http://localhost:8000`) — point that env var at
-this server's port:
+Defaults to `http://localhost:8787`. The Vite dev server proxies `/api/*`
+to `BACKEND_URL` (default `http://localhost:8787`), so as long as both are
+running the frontend reaches the API with no further config.
 
 ```bash
 # from repo root
-PHP_DEV_URL=http://localhost:8787 npm run dev   # Vite
-# in another shell
-cd server && npm run dev                         # Fastify
+npm run dev               # Vite on :3006 (SPA)
+npm run dev:server        # Fastify on :8787 (API) — separate shell
 ```
 
 ## Endpoints
@@ -31,9 +28,9 @@ cd server && npm run dev                         # Fastify
 | Method | Path           | Purpose                                                              |
 |--------|----------------|----------------------------------------------------------------------|
 | GET    | `/api/healthz` | Liveness                                                             |
-| ANY    | `/proxy.php`   | CORS proxy to `XTREAM_DNS`. Off unless `PROXY_ENABLED=true`.         |
-| GET    | `/tmdb.php`    | Server-side TMDB v3 read proxy (key hidden). `path=` is allowlisted. |
-| POST   | `/epg.php`     | `init=1` ingests EPG; otherwise `{epg_id, start, stop}` → list.      |
+| ANY    | `/api/proxy`   | CORS proxy to `XTREAM_DNS`. Off unless `PROXY_ENABLED=true`.         |
+| GET    | `/api/tmdb`    | Server-side TMDB v3 read proxy (key hidden). `path=` is allowlisted. |
+| POST   | `/api/epg`     | `init=1` ingests EPG; otherwise `{epg_id, start, stop}` → list.      |
 
 ## Production single-origin deploy
 

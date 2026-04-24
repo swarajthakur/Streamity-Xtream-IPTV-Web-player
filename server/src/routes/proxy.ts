@@ -36,14 +36,14 @@ async function validateUpstream(target: URL): Promise<void> {
 }
 
 /**
- * Replaces proxy.php. Streams the upstream response body, preserving the
+ * CORS proxy. Streams the upstream response body, preserving the
  * Content-Type header. Supports GET and POST (application/x-www-form-urlencoded).
  *
  * Query: ?url=<absolute URL inside XTREAM_DNS>
  */
 export function registerProxy(app: FastifyInstance) {
   if (!config.proxyEnabled) {
-    app.all('/proxy.php', async (_req, reply) => reply.code(403).send('Proxy not available'));
+    app.all('/api/proxy', async (_req, reply) => reply.code(403).send('Proxy not available'));
     return;
   }
 
@@ -95,6 +95,6 @@ export function registerProxy(app: FastifyInstance) {
     return reply.send(Readable.fromWeb(upstream.body as any));
   };
 
-  app.get('/proxy.php', handler);
-  app.post('/proxy.php', handler);
+  app.get('/api/proxy', handler);
+  app.post('/api/proxy', handler);
 }
