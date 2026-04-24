@@ -9,7 +9,10 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview --port 3006",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "dev:server": "npm --prefix server run dev",
+    "build:server": "npm --prefix server run build",
+    "server": "npm --prefix server run start"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.2",

@@ -16,12 +16,12 @@
     <script src="/config.js"></script>
     <link rel="stylesheet" href="/config.css" />
 
-    <!-- Legacy Bootstrap + jQuery kept during migration. Removed in Phases 4–6
-         as each component is rebuilt on shadcn/Tailwind. -->
+    <!-- Bootstrap CSS + Font Awesome are still required by a handful of
+         un-migrated legacy components (MainVod sub-components, EPG
+         fullscreen). jQuery and the Bootstrap JS bundle were dropped after
+         Phase 6 since no interactive Bootstrap component is used anymore. -->
     <link rel="stylesheet" href="/asset/bootstrap.min.css" />
     <link rel="stylesheet" href="/asset/all.css" />
-    <script defer src="/asset/jquery-3.4.1.slim.min.js"></script>
-    <script defer src="/asset/bootstrap.bundle.min.js"></script>
     <script defer src="/asset/fawesome.js" crossorigin="anonymous"></script>
   </head>
   <body>
