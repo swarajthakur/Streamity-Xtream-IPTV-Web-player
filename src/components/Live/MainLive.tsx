@@ -63,7 +63,7 @@ export default function MainLive() {
         )}
       >
         <div className="mx-auto grid h-full w-full max-w-[1800px] grid-cols-1 gap-4 px-4 pb-4 pt-4 md:px-8 lg:grid-cols-12">
-          <section className="flex min-h-0 flex-col lg:col-span-5">
+          <div className="flex h-full min-h-0 flex-col lg:col-span-5">
             <h2
               className="mb-2 truncate text-lg font-semibold tracking-tight text-neutral-100 md:text-xl"
               title={playingChannel?.name}
@@ -79,13 +79,13 @@ export default function MainLive() {
                 Shift={playingChannel ? playingChannel.shift : 0}
               />
             </div>
-          </section>
+          </div>
 
-          <section className="flex min-h-0 flex-col lg:col-span-7">
+          <div className="flex h-full min-h-0 flex-col lg:col-span-7">
             <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900/40">
               <Channels playlist={playlist} />
             </div>
-          </section>
+          </div>
         </div>
       </main>
 
