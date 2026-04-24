@@ -17,6 +17,8 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
+      // Phase 3: legacy components import from 'react-redux'; route to Zustand shim.
+      'react-redux': path.resolve(__dirname, 'src/store/legacy.ts'),
     },
   },
   esbuild: {

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch } from '@/store/legacy';
 
 import { PrivateRoute, ProvideAuth } from './other/auth';
 import NavBar from './components/NavBar';

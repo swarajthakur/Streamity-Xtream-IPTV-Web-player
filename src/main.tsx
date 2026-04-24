@@ -1,17 +1,9 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Provider } from 'react-redux';
-import { createStore } from 'redux';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import App from './App';
-import allReducer from './reducer/index';
 import './index.css';
-
-const store = createStore(
-  allReducer,
-  window.__REDUX_DEVTOOLS_EXTENSION__ && (window.__REDUX_DEVTOOLS_EXTENSION__() as never)
-);
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -29,9 +21,7 @@ if (!container) throw new Error('#root not found');
 createRoot(container).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <Provider store={store}>
-        <App />
-      </Provider>
+      <App />
     </QueryClientProvider>
   </StrictMode>
 );
