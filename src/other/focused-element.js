@@ -1,8 +1,7 @@
 let focused;
-exports.getFocus = () =>{
-    return focused;
-}
+export const getFocus = () => focused;
+export const setFocus = (el) => {
+  focused = el;
+};
 
-exports.setFocus = (el) =>{
-    focused = el;
-}
+export default { getFocus, setFocus };

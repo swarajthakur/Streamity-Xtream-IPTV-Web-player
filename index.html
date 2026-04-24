@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0a0a0a" />
+    <meta name="description" content="Streamify — modern Xtream IPTV web player" />
+    <link rel="apple-touch-icon" href="/img/streamify-mark.svg" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="preconnect" href="https://rsms.me/" />
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+    <title>Streamify</title>
+
+    <!-- Runtime config (window.dns, window.cors, window.https, window.tmdb, window.playername) -->
+    <script src="/config.js"></script>
+    <link rel="stylesheet" href="/config.css" />
+
+    <!-- Legacy Bootstrap + jQuery kept during migration. Removed in Phases 4–6
+         as each component is rebuilt on shadcn/Tailwind. -->
+    <link rel="stylesheet" href="/asset/bootstrap.min.css" />
+    <link rel="stylesheet" href="/asset/all.css" />
+    <script defer src="/asset/jquery-3.4.1.slim.min.js"></script>
+    <script defer src="/asset/bootstrap.bundle.min.js"></script>
+    <script defer src="/asset/fawesome.js" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

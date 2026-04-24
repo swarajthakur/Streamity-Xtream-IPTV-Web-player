@@ -1,11 +1,8 @@
 const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-exports.dateToName = (date) =>{
-    let d = new Date(date);
-    return days[d.getDay()];
-} 
+export const dateToName = (date) => days[new Date(date).getDay()];
 
-exports.dateToReadable = (date) =>{
-    let d = new Date(date);
-    return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`
-} 
+export const dateToReadable = (date) => {
+  const d = new Date(date);
+  return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+};
