@@ -58,22 +58,22 @@ export default function MainLive() {
     <>
       <main
         className={cn(
-          'min-h-screen bg-neutral-950 pt-20 transition-[filter] duration-500',
+          'h-screen overflow-hidden bg-neutral-950 pt-16 transition-[filter] duration-500',
           blurred && 'pointer-events-none blur-sm'
         )}
       >
-        <div className="mx-auto grid w-full max-w-[1800px] grid-cols-1 gap-6 px-4 pb-6 md:px-8 lg:grid-cols-12">
-          <section className="lg:col-span-5 xl:col-span-5">
+        <div className="mx-auto grid h-full w-full max-w-[1800px] grid-cols-1 gap-4 px-4 pb-4 pt-4 md:px-8 lg:grid-cols-12">
+          <section className="flex min-h-0 flex-col lg:col-span-5">
             <h2
-              className="truncate text-lg font-semibold tracking-tight text-neutral-100 md:text-xl"
+              className="mb-2 truncate text-lg font-semibold tracking-tight text-neutral-100 md:text-xl"
               title={playingChannel?.name}
             >
               {playingChannel?.name || 'No channel selected'}
             </h2>
-            <div className="mt-3 overflow-hidden rounded-xl border border-neutral-800 bg-black shadow-2xl">
+            <div className="overflow-hidden rounded-xl border border-neutral-800 bg-black shadow-2xl">
               <Player />
             </div>
-            <div className="mt-4 rounded-xl border border-neutral-800 bg-neutral-900/60 p-3">
+            <div className="mt-3 min-h-0 flex-1 overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900/60">
               <EpgListing
                 Epg={playingChannel ? playingChannel.epg_channel_id : null}
                 Shift={playingChannel ? playingChannel.shift : 0}
@@ -81,8 +81,8 @@ export default function MainLive() {
             </div>
           </section>
 
-          <section className="lg:col-span-7 xl:col-span-7">
-            <div className="rounded-xl border border-neutral-800 bg-neutral-900/40 p-2">
+          <section className="flex min-h-0 flex-col lg:col-span-7">
+            <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900/40">
               <Channels playlist={playlist} />
             </div>
           </section>
