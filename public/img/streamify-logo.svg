@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 96" role="img" aria-label="Streamify">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 96" role="img" aria-label="Streamify">
   <defs>
     <linearGradient id="sf-g" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="#ff2c3a"/>
@@ -9,6 +9,6 @@
         font-family="'Helvetica Neue', Arial, sans-serif"
         font-weight="900"
         font-size="82"
-        letter-spacing="-3"
+        letter-spacing="-2"
         fill="url(#sf-g)">STREAMIFY</text>
 </svg>
