@@ -39,7 +39,13 @@ const TsPlayer = ({ url, playing, volume, onError, onLoading, onPlaying }) => {
         };
         player.on(mpegts.Events.ERROR, onErr);
         player.on(mpegts.Events.LOADING_COMPLETE, () => onLoading && onLoading(false));
-        player.on(mpegts.Events.MEDIA_INFO, () => onLoading && onLoading(false));
+        player.on(mpegts.Events.MEDIA_INFO, (info) => {
+            // Log codec so unsupported streams (HEVC/MPEG-2) can be diagnosed at a glance.
+            // Browsers only decode H.264/AAC in MSE — audio-only black-screen = unsupported video codec.
+            // eslint-disable-next-line no-console
+            console.info("[TsPlayer] codec", { video: info.videoCodec, audio: info.audioCodec, w: info.width, h: info.height });
+            onLoading && onLoading(false);
+        });
 
         player.attachMediaElement(videoRef.current);
         player.load();
