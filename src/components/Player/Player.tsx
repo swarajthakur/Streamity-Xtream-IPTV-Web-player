@@ -5,7 +5,6 @@ import { useSelector } from '@/store/legacy';
 import TsPlayer from './TsPlayer';
 import { cn } from '@/lib/utils';
 import { generateUrl, catchupUrlGenerator, convertTsToM3u8 } from '../../other/generate-url';
-import Fullscreen from '../Live/Fullscreen.js';
 
 const HIDE_DELAY_MS = 3000;
 
@@ -201,13 +200,15 @@ export default function Player() {
         </div>
       </div>
 
-      {fullscreen && (
-        <Fullscreen
-          externalShow={overlayVisible}
-          cTitle={(playingChannel as any).title}
-          cDesc={(playingChannel as any).desc}
-          cDuration={(playingChannel as any).duration}
-        />
+      {fullscreen && overlayVisible && (playingChannel as any)?.title && (
+        <div className="pointer-events-none absolute inset-x-0 top-0 bg-gradient-to-b from-black/90 to-transparent px-8 py-6 text-white">
+          <div className="text-2xl font-bold">{(playingChannel as any).title}</div>
+          {(playingChannel as any).desc && (
+            <div className="mt-1 max-w-2xl text-sm text-neutral-300">
+              {(playingChannel as any).desc}
+            </div>
+          )}
+        </div>
       )}
     </div>
   );

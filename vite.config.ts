@@ -17,9 +17,12 @@ export default defineConfig({
   // Legacy CRA convention — expose REACT_APP_* env vars alongside VITE_*.
   envPrefix: ['VITE_', 'REACT_APP_'],
   resolve: {
+    // Prefer .tsx / .ts over .js so rebuilt components shadow any lingering
+    // legacy shim file with the same basename.
+    extensions: ['.tsx', '.ts', '.jsx', '.js', '.json'],
     alias: {
       '@': path.resolve(__dirname, 'src'),
-      // Phase 3: legacy components import from 'react-redux'; route to Zustand shim.
+      // Legacy components import from 'react-redux'; route to Zustand shim.
       'react-redux': path.resolve(__dirname, 'src/store/legacy.ts'),
     },
   },

@@ -28,7 +28,7 @@ export default function NavBar() {
   const search = window.location.search;
 
   const iconClass =
-    'inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-neutral-200 ring-1 ring-white/10 transition hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand';
+    'inline-flex h-10 w-10 items-center justify-center rounded-full bg-neutral-900/80 text-neutral-100 ring-1 ring-white/20 shadow-lg shadow-black/50 backdrop-blur transition hover:bg-neutral-800 hover:text-white hover:ring-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand';
 
   return (
     <header
@@ -36,7 +36,7 @@ export default function NavBar() {
         'fixed inset-x-0 top-0 z-40 flex h-16 items-center justify-between px-4 transition-colors duration-300 md:px-10',
         scrolled
           ? 'bg-neutral-950/95 backdrop-blur shadow-[0_4px_20px_rgba(0,0,0,0.5)]'
-          : 'bg-gradient-to-b from-neutral-950/85 to-transparent'
+          : 'bg-gradient-to-b from-black/80 via-black/50 to-transparent'
       )}
     >
       <Link to="/" className="flex items-center gap-3">
