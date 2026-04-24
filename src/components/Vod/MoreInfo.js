@@ -226,7 +226,7 @@ const MoreInfo = ({style}) => {
                 {(youtubeId) ?
                 ( <Header>
                     {youtubeId && (<iframe frameBorder="0" height="100%" width="100%" title="youtube-pop"
-                      src={`https://youtube.com/embed/${youtubeId}?autoplay=1&controls=0&showinfo=0&autohide=1&mute=1&loop=1&disablekb=1&modestbranding=1&playlist=${youtubeId}&origin=http://localhost:3006`}/>)
+                      src={`https://youtube.com/embed/${youtubeId}?autoplay=1&controls=0&showinfo=0&autohide=1&mute=1&loop=1&disablekb=1&modestbranding=1&playlist=${youtubeId}&origin=${encodeURIComponent(window.location.origin)}`}/>)
                     }
                     </Header>)
                 :
@@ -282,19 +282,19 @@ const MoreInfo = ({style}) => {
                             </ButtonFavorite>
                             <div className="btn-group btn-block" role="group">
                                 {youtubeId && (
-                                <ButtonSecond type="button" className="btn btn-block btn-info-2" data-id={2} style={{backgroundColor:"#c4302b"}}  href={`https://www.youtube.com/watch?v=${youtubeId}`} target="_blank"><i className="fab fa-youtube mr-1"></i>
+                                <ButtonSecond type="button" className="btn btn-block btn-info-2" data-id={2} style={{backgroundColor:"#c4302b"}}  href={`https://www.youtube.com/watch?v=${youtubeId}`} target="_blank" rel="noopener noreferrer"><i className="fab fa-youtube mr-1"></i>
                                     Trailer
                                 </ButtonSecond>)}
 
                                 {url ? (
-                                    <ButtonSecond type="button" className={`btn btn-secondary btn-info-${!youtubeId ? 2 : 3}`} data-id={!youtubeId ? 2 : 3} href={url} target="_blank">
+                                    <ButtonSecond type="button" className={`btn btn-secondary btn-info-${!youtubeId ? 2 : 3}`} data-id={!youtubeId ? 2 : 3} href={url} target="_blank" rel="noopener noreferrer">
                                         <i className={`fas fa-download ${!youtubeId && ("mr-1")}`}></i>
                                         {!youtubeId && ("Download")}
                                     </ButtonSecond>
                                 )
                                 :
                                 youtubeId && (
-                                    <ButtonSecond type="button" className="btn btn-block" data-id={2} style={{backgroundColor:"#c4302b"}}  href={`https://www.youtube.com/watch?v=${youtubeId}`} target="_blank">
+                                    <ButtonSecond type="button" className="btn btn-block" data-id={2} style={{backgroundColor:"#c4302b"}}  href={`https://www.youtube.com/watch?v=${youtubeId}`} target="_blank" rel="noopener noreferrer">
                                         <i className="fab fa-youtube mr-1"></i>
                                         Trailer
                                 </ButtonSecond>)

@@ -135,7 +135,7 @@ const BackgroundPlayer = ({name, stream_icon, stream_id, category_id, isSeries, 
                 (<VideoContainer>
                     <div>
                         {youtubeId && (<iframe frameBorder="0" height="100%" width="100%" title="youtube-bg"
-                          src={`https://youtube.com/embed/${youtubeId}?autoplay=1&controls=0&showinfo=0&autohide=1&mute=1&loop=1&disablekb=1&modestbranding=1&playlist=${youtubeId}&origin=http://localhost:3006`}>
+                          src={`https://youtube.com/embed/${youtubeId}?autoplay=1&controls=0&showinfo=0&autohide=1&mute=1&loop=1&disablekb=1&modestbranding=1&playlist=${youtubeId}&origin=${encodeURIComponent(window.location.origin)}`}>
                         </iframe>)
                     }
                     </div>

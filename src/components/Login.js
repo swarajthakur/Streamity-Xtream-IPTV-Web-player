@@ -64,8 +64,10 @@ width:100%;
 }
 `
 
+const envAutoLogin = !!(process.env.REACT_APP_XTREAM_DNS && process.env.REACT_APP_XTREAM_USERNAME && process.env.REACT_APP_XTREAM_PASSWORD);
+
 const Login = ({url}) => {
-    
+
     const [dns, setDns] = useState("");
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -120,6 +122,11 @@ const Login = ({url}) => {
         inputRef.current.focus();
     }
 
+    if (envAutoLogin) {
+        // Credentials come from .env — form is never shown; useEffect triggers silent signin.
+        return null;
+    }
+
     return (
         <>
         <Container style={blur}>
@@ -144,7 +151,7 @@ const Login = ({url}) => {
         </Container>
         {showPopup && <Popup unsecure={true} title={showPopup.title} description={showPopup.description} icon={"fas fa-user-times"}  onclick={closePopup}/>}
         {m3u8 && (
-            <Popup unsecure={true} error={false} title={"Informations"} description={"To login use your IPTVEditor's playlist username and password, not your email.<br/>IPTVEditor Web Player can play live channels streams only in M3U8 format.<br/>The conversion will be done automatically if streams are in Xtreamcodes format (this won't affect your playlist)."} icon={"fas fa-info-circle"} onclick={()=>  {Cookies.set("m3u8_play",1,{ expires: 365 }); setM3u8(!m3u8);}}/>
+            <Popup unsecure={true} error={false} title={"Informations"} description={"Use your Xtream provider's username and password.<br/>This player can play live channels in M3U8 format.<br/>The conversion will be done automatically if streams are in Xtreamcodes format (this won't affect your playlist)."} icon={"fas fa-info-circle"} onclick={()=>  {Cookies.set("m3u8_play",1,{ expires: 365 }); setM3u8(!m3u8);}}/>
         )}
         {/*showKeyboard !== false && isMag && (<KeyboardOverlay onValueChange={onChange} onKeyboardClose={onKeyboardClose} itemValue={showKeyboard}/>)*/}
         </>

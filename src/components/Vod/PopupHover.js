@@ -132,7 +132,7 @@ const PopupHover = ({name,stream_icon, stream_id, stream_url, category_id, style
                 {(youtubeId) ?
                 ( <Header>
                     {youtubeId && (<iframe frameBorder="0" height="100%" width="100%" title="youtube-frame"
-                      src={`https://youtube.com/embed/${youtubeId}?autoplay=1&controls=0&showinfo=0&autohide=1&mute=1&loop=1&disablekb=1&modestbranding=1&playlist=${youtubeId}&origin=http://localhost:3006`}/>)
+                      src={`https://youtube.com/embed/${youtubeId}?autoplay=1&controls=0&showinfo=0&autohide=1&mute=1&loop=1&disablekb=1&modestbranding=1&playlist=${youtubeId}&origin=${encodeURIComponent(window.location.origin)}`}/>)
                     }
                     </Header>)
                 :
@@ -148,14 +148,14 @@ const PopupHover = ({name,stream_icon, stream_id, stream_url, category_id, style
                         </div>
                         {youtubeId && (
                         <div className="col-2">
-                            <ABtn href={`https://www.youtube.com/watch?v=${youtubeId}`} target="_blank">
+                            <ABtn href={`https://www.youtube.com/watch?v=${youtubeId}`} target="_blank" rel="noopener noreferrer">
                                 <i className="fab fa-youtube"></i>
                             </ABtn>
                         </div>
                         )}
                         {isSeries === false &&
                         ([<div className="col-2">
-                                <ABtn href={stream_url} target="_blank">
+                                <ABtn href={stream_url} target="_blank" rel="noopener noreferrer">
                             <i className="fas fa-download"></i>
                             </ABtn>
                         </div>,

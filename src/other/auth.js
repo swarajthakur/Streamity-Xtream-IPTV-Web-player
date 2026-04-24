@@ -34,10 +34,8 @@ export function useProvideAuth() {
           result = result.response.data
       }
       if(result && result.user_info){
-        if(result.iptveditor)
-          axios.setDns(`${process.env.REACT_APP_IPTVEDITOR_API}webplayer`);
         if(result.user_info.auth === 0)
-          failFallback("No account found","No account found with inserted credentials." + (window.location.host.includes("iptveditor.com") ? "<br/>To login use your IPTVEditor's playlist username and password, not your email." : ""));
+          failFallback("No account found","No account found with inserted credentials.");
         else if(result.user_info.auth){
           if(result.user_info.status !== "Active")
             failFallback("Account expired",`Account expired on ${new Date(parseInt(result.user_info.exp_date+"000")).toGMTString()}`);
@@ -57,19 +55,23 @@ export function useProvideAuth() {
     }).catch(err => {
       console.log(err);
       if(err && err.response && err.response.data && err.response.data.user_info && err.response.data.user_info.auth === 0)
-        failFallback && (failFallback("No account found","No account found with inserted credentials." + (window.location.host.includes("iptveditor.com") ? "<br/>To login use your IPTVEditor's playlist username and password, not your email." : "")));
+        failFallback && (failFallback("No account found","No account found with inserted credentials."));
       else failFallback && (failFallback("Server error","Server didn't generated any reply. Please try later #1"));
     })
   };
 
   const authLogin = (fallback) =>{
 
-    const dns = window.dns.length === 0 && (Cookies.get("dns")) ;
-    const username = Cookies.get("username");
-    const password = Cookies.get("password");
+    const envDns = process.env.REACT_APP_XTREAM_DNS;
+    const envUser = process.env.REACT_APP_XTREAM_USERNAME;
+    const envPass = process.env.REACT_APP_XTREAM_PASSWORD;
+
+    const dns = envDns || (window.dns.length === 0 && Cookies.get("dns")) || undefined;
+    const username = envUser || Cookies.get("username");
+    const password = envPass || Cookies.get("password");
 
     if(username && password)
-      signin(dns,username,password,fallback);      
+      signin(dns,username,password,fallback);
   }
 
   const signout = (action) => {

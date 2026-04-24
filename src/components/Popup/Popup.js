@@ -170,8 +170,14 @@ const Popup = ({type,title,description,icon, onclick, error=true, unsecure}) => 
                 <Body>
                     <i className={icon + " ni-3x"}></i>
                     <h4>{title}</h4>
-                    {unsecure === true ? 
-                    (<p dangerouslySetInnerHTML={{__html:description}}></p>)
+                    {unsecure === true ?
+                    (<p>{typeof description === "string"
+                        ? description.split(/<br\s*\/?>/i).reduce((acc, part, idx, arr) => {
+                            acc.push(<React.Fragment key={idx}>{part}</React.Fragment>);
+                            if (idx < arr.length - 1) acc.push(<br key={`br-${idx}`} />);
+                            return acc;
+                        }, [])
+                        : description}</p>)
                     :
                     (<p>{description}</p>)
                     }

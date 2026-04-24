@@ -1,4 +1,4 @@
-import React, {useState} from "react"
+import React, {useEffect} from "react"
 import {HashRouter as Router, Route,Switch} from "react-router-dom"
 import {PrivateRoute,ProvideAuth} from "./other/auth"
 import "./App.css"
@@ -24,13 +24,19 @@ import {setTimer5} from "./actions/timer5"
 
 function App() {
   const dispatch = useDispatch()
-  setInterval(() => dispatch(setTimer60()), 50000);
-  setInterval(() => dispatch(setTimer5()), 5000);
 
-  if(window.location.protocol !== 'https:' && window.https===true)
-    window.location = window.location.href.replace("http","https");
-  else if(window.location.protocol === 'https:'  && window.https===false)
-    window.location = window.location.href.replace("https","http");
+  useEffect(() => {
+    const i60 = setInterval(() => dispatch(setTimer60()), 50000);
+    const i5 = setInterval(() => dispatch(setTimer5()), 5000);
+    return () => { clearInterval(i60); clearInterval(i5); };
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (window.location.protocol !== 'https:' && window.https === true)
+      window.location = window.location.href.replace(/^http:\/\//i, "https://");
+    else if (window.location.protocol === 'https:' && window.https === false)
+      window.location = window.location.href.replace(/^https:\/\//i, "http://");
+  }, []);
 
   let url = window.location.hash.replace("#","");
 

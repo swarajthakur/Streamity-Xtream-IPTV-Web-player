@@ -132,7 +132,7 @@ const Episode = ({episode, image, duration, title, description, selected, playEp
                 {secondsToHms(duration)}
             </div>
             <div className="col-1 center-container">
-                <DownloadIcon href={url} target="_blank">
+                <DownloadIcon href={url} target="_blank" rel="noopener noreferrer">
                     <i className="fas fa-download"></i>
                 </DownloadIcon>
             </div>

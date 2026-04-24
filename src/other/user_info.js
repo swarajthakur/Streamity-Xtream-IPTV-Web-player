@@ -18,8 +18,9 @@ export function setInfo(data, serverInfo){
         dns: `${serverInfo.server_protocol}://${serverInfo.url}:${serverInfo.port}`
     },true);
 
-    Cookies.set("username",data.username,{ expires: 365 });
-    Cookies.set("password",data.password,{ expires: 365 });
+    const cookieOpts = { expires: 365, sameSite: "strict", secure: window.location.protocol === "https:" };
+    Cookies.set("username", data.username, cookieOpts);
+    Cookies.set("password", data.password, cookieOpts);
 }
 
 export function logout(){

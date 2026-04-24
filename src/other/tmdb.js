@@ -1,21 +1,45 @@
 import {optimizeName, secondsToHms, createMovieInfo, createEpisode} from "./vod-series-name-optimizer"
 import * as axios from "./axios";
 
+const TMDB_USE_PROXY = process.env.REACT_APP_TMDB_USE_PROXY === "true";
+const TMDB_ENV_KEY = process.env.REACT_APP_TMDB_API_KEY || "";
+
+function tmdbKey() {
+    return TMDB_ENV_KEY || window.tmdb || "";
+}
+
+function tmdbEnabled() {
+    return TMDB_USE_PROXY || !!tmdbKey();
+}
+
+// Build a TMDB request URL. `path` is like "/3/search/movie" (no api_key, no leading host).
+// `params` is a plain object of query params (without api_key).
+function tmdbUrl(path, params) {
+    const qs = new URLSearchParams();
+    Object.keys(params || {}).forEach(k => {
+        if (params[k] !== undefined && params[k] !== null && params[k] !== "") qs.append(k, params[k]);
+    });
+    if (TMDB_USE_PROXY) {
+        qs.set("path", path);
+        return `/tmdb.php?${qs.toString()}`;
+    }
+    qs.set("api_key", tmdbKey());
+    return `https://api.themoviedb.org${path}?${qs.toString()}`;
+}
+
 export async function getVodTmdbData(name, existingTmdb){
     const language = navigator.language || navigator.userLanguage; 
     name = optimizeName(name);
 
-    if(!window.tmdb){
+    if(!tmdbEnabled()){
       return createMovieInfo(name)
     }
 
-    let tmdb = existingTmdb || await axios.get(`https://api.themoviedb.org/3/search/movie${language ? `?language=${language.toLowerCase()}&`:"?"}api_key=${window.tmdb}&query=${encodeURI(name)}`
-    ,{ headers: { 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.55 Safari/537.36 Edg/86.0.622.28' }  } ).catch(err=> {return null});;
-    
+    let tmdb = existingTmdb || await axios.get(tmdbUrl("/3/search/movie", {language: language && language.toLowerCase(), query: name})).catch(err=> {return null});
+
     if(existingTmdb || (tmdb && tmdb.data && tmdb.data.results.length>0)){
        let tmdbId = existingTmdb || tmdb.data["results"][0]["id"];
-       tmdb = await axios.get(`https://api.themoviedb.org/3/movie/${tmdbId}${language ? `?language=${language.toLowerCase()}&`:"?"}api_key=${window.tmdb}&append_to_response=images,credits,videos`,
-       { headers: { 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.55 Safari/537.36 Edg/86.0.622.28' }  } ).catch(err=> {return null});;
+       tmdb = await axios.get(tmdbUrl(`/3/movie/${tmdbId}`, {language: language && language.toLowerCase(), append_to_response: "images,credits,videos"})).catch(err=> {return null});
     
        if(tmdb && tmdb.data && !tmdb.data.success){
           tmdb = tmdb.data;
@@ -86,25 +110,20 @@ export async function getSeriesTmdbData(name, streams, existingTmdb) {
    let info = {};
    let episodes = {};
 
-   let tmdb = existingTmdb || await axios.get(`https://api.themoviedb.org/3/search/tv${language ? `?language=${language.toLowerCase()}&`:"?"}api_key=${window.tmdb}&query=${encodeURI(name)}`, {
-      headers: {
-         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.55 Safari/537.36 Edg/86.0.622.28'
-      }
-   }).catch(err => {
-      return null
-   });;
+   if (!tmdbEnabled() && !existingTmdb) {
+      // fall through to the no-TMDB branch below that builds episodes from stream data only
+   }
+
+   let tmdb = existingTmdb || (tmdbEnabled() && await axios.get(tmdbUrl("/3/search/tv", {language: language && language.toLowerCase(), query: name})).catch(err => { return null }));
 
    if (existingTmdb || (tmdb && tmdb.data && tmdb.data.results.length > 0)) {
       const tmdbId = existingTmdb || tmdb.data["results"][0]["id"];
-      let seasons = "";
-      streams && streams.length > 0  && (seasons =  Array.from(new Set(streams.map(x => x.season))).map(x=> `",season/${x}`))
-      tmdb = await axios.get(`https://api.themoviedb.org/3/tv/${tmdbId}${language ? `?language=${language.toLowerCase()}&`:"?"}api_key=${window.tmdb}&append_to_response=images,credits,videos${seasons}`, {
-         headers: {
-            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.55 Safari/537.36 Edg/86.0.622.28'
-         }
-      }).catch(err => {
-         return null
-      });;
+      let append = "images,credits,videos";
+      if (streams && streams.length > 0) {
+         const extra = Array.from(new Set(streams.map(x => x.season))).map(x => `season/${x}`).join(",");
+         if (extra) append += "," + extra;
+      }
+      tmdb = await axios.get(tmdbUrl(`/3/tv/${tmdbId}`, {language: language && language.toLowerCase(), append_to_response: append})).catch(err => { return null });
 
       if (tmdb && tmdb.data && !tmdb.data.success) {
          tmdb = tmdb.data;

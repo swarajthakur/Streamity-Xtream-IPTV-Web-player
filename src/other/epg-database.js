@@ -1,5 +1,4 @@
-import { loadEpg, loadEpgArray } from "./load-playlist"
-import { getIsIptveditor } from "./axios"
+import { loadEpg } from "./load-playlist"
 
 const epgMap = new Map();
 /*
@@ -77,62 +76,6 @@ export function isAvailable(id, day = 1) {
     }
     return 0;
 }
-
-
-/*
-epgs_multiple:[
-    {id: "ciao.it", data:[{title:"...."}]}
-]
-*/
-
-export async function downloadEpgDataFromCategories(channels) {
-    const limit = 1
-    let epgIds = Array.from(new Set(channels.map(x => x.epg_channel_id))).filter(x=>x && x !== "NULL")
-    let toDownload = isAvailableArray(epgIds);
-
-    if (toDownload.length === 0)
-        return;
-    else {
-        const result = await loadEpgArray(toDownload, limit)
-        toDownload.forEach(id => {
-            let data = result[[id]]
-            if (data && data.length > 0) {
-                data = convertEpgListing(data);
-                const dataset = epgMap.has(id) ? epgMap.get(id) : { days: {}, data: [] }
-                mergeDay(dataset, data, limit);
-                epgMap.set(id, dataset)
-            } else {
-                if (epgMap.has(id)) {
-                    if (!epgMap.get(id)){
-
-                    }
-                    if (!epgMap.get(id).days)
-                        epgMap.get(id).days = {}
-                    epgMap.get(id).days[limit] = false;
-                } else if (limit === 1)
-                    epgMap.set(id, false);
-                else {
-                    let obj = { days: {}, data: [] };
-                    obj.days[limit] = false;
-                    epgMap.set(id, obj);
-                }
-            }
-        })
-
-    }
-}
-
-
-export function isAvailableArray(ids) {
-    const toReturn = []
-    ids.forEach(id => {
-        if (!epgMap.has(id)) {
-            toReturn.push(id)
-        }
-    })
-    return toReturn
-}
-
 
 
 export function getEpg(id, day = 1, shift = 0) {

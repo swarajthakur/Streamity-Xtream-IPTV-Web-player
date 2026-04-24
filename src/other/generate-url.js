@@ -1,11 +1,12 @@
 import {getInfo} from "./user_info"
-import {getDns, getIsIptveditor} from "./axios"
+import {getDns} from "./axios"
 
 export function generateUrl (type, id, extension){
-    const dns = getIsIptveditor()===true ? process.env.REACT_APP_IPTVEDITOR_API : getDns();
+    const dns = getDns();
     const user = getInfo().username;
     const pass = getInfo().password;
-    return `${dns}${type}/${user}/${pass}/${id}.${ getIsIptveditor()===true ? "mp4" : extension}`
+    const ext = extension || (type === "live" ? "m3u8" : "mp4");
+    return `${dns}${type}/${user}/${pass}/${id}.${ext}`
 }
 
 export function convertTsToM3u8(ip) {
@@ -51,4 +52,5 @@ const timeConverter = (time) =>{
     return year + "-" + (month < 10 ? "0"+month : month) + "-" + (day < 10 ? "0"+day : day) + " " + (hour < 10 ? "0"+hour : hour) + ':' + (min < 10 ? "0"+min : min) + ':' + (sec < 10 ? "0"+sec : sec);
 };
 
-export default {generateUrl, catchupUrlGenerator}
+const urlHelpers = {generateUrl, catchupUrlGenerator};
+export default urlHelpers;

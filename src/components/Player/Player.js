@@ -1,5 +1,5 @@
 import React, {useRef,useState,useEffect} from "react"
-import ReactPlayer from 'react-player'
+import TsPlayer from './TsPlayer'
 import {useSelector} from "react-redux"
 import Fullscreen from "../Live/Fullscreen.js"
 import Button from "./Buttons/Button"
@@ -146,33 +146,13 @@ const Player = () => {
       onMouseLeave = {()=> showOverlay(false)} 
       onMouseMove={() => fullscreen && showOverlayTimer()} 
       style={showCursor}>
-        <ReactPlayer
-         className='react-player'
-         width='100%'
-         height='100%'
-         playing={play}
-         volume={volume/100}
-         url={url}
-         pip={pip}
-         controls={false}
-         onProgress={(state)=>{
-          setError(false)
-         }}
-         onPlay={()=>{
-          setError(false)
-        }}
-         onError={(error, data)=> {
-          setError(true)
-          setIsLoading(false)
-         }}
-         onBufferEnd={()=>{
-          setError(false)
-          setIsLoading(false)
-         }}
-         onBuffer={()=>{
-          setIsLoading(true);
-          setError(false)
-        }}
+        <TsPlayer
+          url={url}
+          playing={play}
+          volume={volume/100}
+          onPlaying={() => { setError(false); setIsLoading(false); }}
+          onLoading={(v) => { setIsLoading(v); if (v) setError(false); }}
+          onError={() => { setError(true); setIsLoading(false); }}
         />
         { isLoading === true && (<Spin>
             <Loading color={"var(--second-color);"}>

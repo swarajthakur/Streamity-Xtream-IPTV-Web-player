@@ -326,7 +326,8 @@ export default MainVod
 
 
 function searchRandomMovie(playlist){
-    playlist = playlist.filter(x=> !x.name.match(/xxx|porn|sex|bbc|bitch|cunt|cock|cum|piss|anal|tits|blowjob|masturbate|dick|suck|gangbang/i));
+    if(!Array.isArray(playlist) || playlist.length === 0) return {};
+    playlist = playlist.filter(x=> x && x.name && !x.name.match(/xxx|porn|sex|bbc|bitch|cunt|cock|cum|piss|anal|tits|blowjob|masturbate|dick|suck|gangbang/i));
     const tempPlaylist = playlist.filter(x=> x.rating >= 7)
     if(tempPlaylist.length > 0){
         return {...tempPlaylist[Math.floor(Math.random() * tempPlaylist.length)]}
