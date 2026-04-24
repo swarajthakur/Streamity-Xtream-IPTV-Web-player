@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link, Route, Switch, useHistory, useLocation, useParams } from 'react-router-dom';
+import { Route, Switch, useHistory, useLocation, useParams } from 'react-router-dom';
 import { Info, Play, Search as SearchIcon } from 'lucide-react';
 
 import { useDispatch, useSelector } from '@/store/legacy';
@@ -36,6 +36,8 @@ interface Category {
   history?: 1;
 }
 
+const MAX_PER_RAIL = 24;
+
 export default function MainVod() {
   const { category, playingMode } = useParams<{ category?: string; playingMode?: string }>();
   const location = useLocation();
@@ -47,80 +49,105 @@ export default function MainVod() {
 
   const [loading, setLoading] = useState(true);
   const [showNoMatches, setShowNoMatches] = useState(false);
-  const [streamList, setStreamList] = useState<Item[]>([]);
-  const [hero, setHero] = useState<Item | null>(null);
 
   const query = new URLSearchParams(location.search);
   const searchText = query.get('search');
 
   useEffect(() => {
+    let cancelled = false;
     const run = async () => {
       setLoading(true);
       const needsReset = resetMemory(playingMode || '');
-      let cats = categories;
 
-      if (needsReset || cats.length === 0) {
-        const gps = (await loadGroup(playingMode || '')) as Category[];
+      // Kick both fetches off in parallel. Categories comes back tiny and fast;
+      // playlist is the heavy one.
+      const needsGroup = needsReset || categories.length === 0;
+      const [gps, chs] = await Promise.all([
+        needsGroup ? loadGroup(playingMode || '') : Promise.resolve(categories as any[]),
+        loadPlaylist(playingMode || '', category || 'ALL') as Promise<Item[]>,
+      ]);
+
+      if (cancelled) return;
+
+      if (needsGroup) {
         if (!gps || gps.length === 0) {
           history.replace('/');
           return;
         }
-        gps.unshift(
+        const withSpecials = [...gps];
+        withSpecials.unshift(
           { category_id: 'fav', favorite: 1, category_name: 'Only favorites' },
           { category_id: 'toend', history: 1, category_name: 'Continue watching' }
         );
-        dispatch(setGroupList(gps));
-        cats = gps;
+        dispatch(setGroupList(withSpecials));
       }
 
-      const chs = ((await loadPlaylist(playingMode || '', category || 'ALL')) || []) as Item[];
-
-      let filtered = chs;
+      let items = Array.isArray(chs) ? chs : [];
       if (category && isNaN(Number(category))) {
-        filtered = chs.filter((s) => {
+        items = items.filter((s) => {
           const id = playingMode === 'series' ? s.series_id : s.stream_id;
           const f = DB.findOne(playingMode || '', id, category === 'fav');
           return f && (category === 'fav' || (f.tot > 3 && f.tot < 95));
         });
       }
-
-      dispatch(setPlaylist(filtered));
-      setStreamList(filtered);
-
-      const pool = category
-        ? filtered.filter((x) => String(x.category_id) === String(category))
-        : filtered;
-      setHero(pickHero(pool));
+      dispatch(setPlaylist(items));
       setLoading(false);
     };
     run().catch((err) => {
       console.error(err);
-      setLoading(false);
+      if (!cancelled) setLoading(false);
     });
+    return () => {
+      cancelled = true;
+    };
   }, [dispatch, category, playingMode, history]);
 
-  const viewList = useMemo(() => {
-    if (!searchText) return streamList;
+  // Build category-id → items[] once per playlist change. Replaces the
+  // previous N·M filter pass on every render.
+  const byCategory = useMemo(() => {
+    const m = new Map<string, Item[]>();
+    for (const it of playlist) {
+      const key = String(it.category_id ?? '');
+      const bucket = m.get(key);
+      if (bucket) bucket.push(it);
+      else m.set(key, [it]);
+    }
+    return m;
+  }, [playlist]);
+
+  // Favorites + Continue-watching buckets (only for VOD/series).
+  const specialBuckets = useMemo(() => {
+    if (!playingMode) return { fav: [] as Item[], toend: [] as Item[] };
+    const fav: Item[] = [];
+    const toend: Item[] = [];
+    for (const s of playlist) {
+      const id = playingMode === 'series' ? s.series_id : s.stream_id;
+      const favRec = DB.findOne(playingMode, id, true);
+      const histRec = DB.findOne(playingMode, id, false);
+      if (favRec) fav.push(s);
+      if (histRec && histRec.tot > 3 && histRec.tot < 95) toend.push(s);
+    }
+    return { fav, toend };
+  }, [playlist, playingMode]);
+
+  const searchResults = useMemo(() => {
+    if (!searchText) return null;
     const q = searchText.toLowerCase();
-    return streamList.filter((x) => x.name?.toLowerCase().includes(q));
-  }, [streamList, searchText]);
+    return playlist.filter((x) => x.name?.toLowerCase().includes(q));
+  }, [searchText, playlist]);
 
   useEffect(() => {
-    if (searchText && viewList.length === 0 && streamList.length > 0) {
-      setShowNoMatches(true);
-    } else {
-      setShowNoMatches(false);
-    }
-  }, [searchText, viewList.length, streamList.length]);
+    if (searchResults && searchResults.length === 0 && playlist.length > 0) setShowNoMatches(true);
+    else setShowNoMatches(false);
+  }, [searchResults, playlist.length]);
 
-  const railCategories = useMemo(
-    () =>
-      categories.filter((c) => {
-        const items = getRailItems(c, viewList, playingMode || '');
-        return items.length > 0;
-      }),
-    [categories, viewList, playingMode]
-  );
+  const hero = useMemo(() => {
+    if (searchText || playlist.length === 0) return null;
+    const pool = category
+      ? playlist.filter((x) => String(x.category_id) === String(category))
+      : playlist;
+    return pickHero(pool);
+  }, [playlist, category, searchText]);
 
   const isSeries = playingMode === 'series';
 
@@ -130,20 +157,31 @@ export default function MainVod() {
     history.push(`/${playingMode}/category/${catId}/${id}/info/`);
   };
 
+  const getRailItems = (c: Category): Item[] => {
+    if (c.favorite === 1) return specialBuckets.fav;
+    if (c.history === 1) return specialBuckets.toend;
+    return byCategory.get(String(c.category_id)) ?? [];
+  };
+
+  const railCategories = useMemo(
+    () => categories.filter((c) => getRailItems(c).length > 0),
+    // getRailItems closes over memoized buckets; re-run when they change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [categories, byCategory, specialBuckets]
+  );
+
   return (
     <main className="min-h-screen bg-neutral-950 pb-24 text-neutral-50">
-      {hero && !searchText && (
-        <VodHero item={hero} isSeries={isSeries} onInfo={() => gotoDetail(hero)} />
-      )}
+      {hero && <VodHero item={hero} isSeries={isSeries} onInfo={() => gotoDetail(hero)} />}
 
-      {searchText ? (
+      {searchResults ? (
         <section className="mx-auto w-full max-w-[1800px] px-4 pt-24 md:px-8">
           <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-neutral-100">
             <SearchIcon className="size-4 text-neutral-500" />
             Results for “{searchText}”
           </h2>
           <div className="flex flex-wrap gap-3">
-            {viewList.slice(0, 60).map((item) => (
+            {searchResults.slice(0, 60).map((item) => (
               <PosterCard
                 key={String(item.stream_id ?? item.series_id)}
                 title={item.name}
@@ -156,10 +194,10 @@ export default function MainVod() {
       ) : (
         <div className="relative -mt-16 space-y-2">
           {railCategories.map((c) => {
-            const items = getRailItems(c, viewList, playingMode || '');
+            const items = getRailItems(c).slice(0, MAX_PER_RAIL);
             return (
               <Rail key={c.category_id} title={c.category_name}>
-                {items.slice(0, 30).map((item) => (
+                {items.map((item) => (
                   <PosterCard
                     key={String(item.stream_id ?? item.series_id)}
                     title={item.name}
@@ -178,9 +216,24 @@ export default function MainVod() {
         </div>
       )}
 
-      {loading && (
-        <div className="fixed inset-0 z-20 flex items-center justify-center bg-neutral-950/40 backdrop-blur-sm">
-          <div className="h-10 w-10 animate-spin rounded-full border-2 border-brand border-t-transparent" />
+      {loading && !hero && (
+        <div className="px-4 pt-32 md:px-10">
+          <div className="space-y-8">
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="space-y-3">
+                <div className="h-5 w-48 animate-pulse rounded bg-neutral-800" />
+                <div className="flex gap-3 overflow-hidden">
+                  {Array.from({ length: 6 }).map((_, j) => (
+                    <div
+                      key={j}
+                      className="aspect-[2/3] w-40 flex-none animate-pulse rounded-md bg-neutral-800 md:w-48"
+                      style={{ animationDelay: `${(i * 6 + j) * 50}ms` }}
+                    />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
@@ -230,13 +283,13 @@ function VodHero({ item, isSeries, onInfo }: HeroProps) {
   const bg = item.stream_icon || item.cover;
 
   return (
-    <section className="relative h-[70vh] min-h-[420px] w-full overflow-hidden">
+    <section className="relative h-[60vh] min-h-[360px] w-full overflow-hidden">
       {bg && (
         <img
           src={bg}
           alt=""
-          className="absolute inset-0 h-full w-full object-cover opacity-50"
-          style={{ filter: 'blur(20px) saturate(120%)', transform: 'scale(1.1)' }}
+          className="absolute inset-0 h-full w-full object-cover opacity-60"
+          style={{ filter: 'blur(18px) saturate(120%)', transform: 'scale(1.1)' }}
         />
       )}
       <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/60 to-transparent" />
@@ -264,17 +317,6 @@ function VodHero({ item, isSeries, onInfo }: HeroProps) {
       </div>
     </section>
   );
-}
-
-function getRailItems(c: Category, list: Item[], mode: string): Item[] {
-  if (c.favorite === 1 || c.history === 1) {
-    return list.filter((s) => {
-      const id = mode === 'series' ? s.series_id : s.stream_id;
-      const f = DB.findOne(mode, id, c.favorite === 1);
-      return f && (c.favorite === 1 || (f.tot > 3 && f.tot < 95));
-    });
-  }
-  return list.filter((s) => String(s.category_id) === String(c.category_id));
 }
 
 function pickHero(list: Item[]): Item | null {

@@ -44,41 +44,43 @@ export default function MainMenu() {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-neutral-950 text-neutral-50">
-      {/* Hero */}
-      <section className="relative flex min-h-[70vh] items-end overflow-hidden">
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(1200px 600px at 70% 10%, rgba(229,9,20,0.35), rgba(0,0,0,0) 60%), radial-gradient(800px 400px at 10% 80%, rgba(124,58,237,0.25), rgba(0,0,0,0) 65%), linear-gradient(180deg, #0a0a0a 0%, #050505 100%)",
-          }}
-        />
-        <div
-          className="pointer-events-none absolute inset-0 opacity-40"
-          style={{
-            backgroundImage:
-              'radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px)',
-            backgroundSize: '3px 3px',
-          }}
-        />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-neutral-950 to-transparent" />
+      {/* Ambient background */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(1200px 600px at 70% 10%, rgba(229,9,20,0.35), rgba(0,0,0,0) 60%), radial-gradient(800px 400px at 10% 80%, rgba(124,58,237,0.25), rgba(0,0,0,0) 65%), linear-gradient(180deg, #0a0a0a 0%, #050505 100%)",
+        }}
+      />
+      <div
+        className="pointer-events-none absolute inset-0 opacity-40"
+        style={{
+          backgroundImage:
+            'radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px)',
+          backgroundSize: '3px 3px',
+        }}
+      />
 
-        <div className="relative z-10 mx-auto w-full max-w-6xl px-6 pb-20 pt-32 md:px-10">
-          <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-medium uppercase tracking-wider text-neutral-300 backdrop-blur">
-            <span className="size-1.5 rounded-full bg-brand" /> Streamify
-          </div>
-          <h1 className="mt-6 max-w-3xl text-5xl font-black leading-[1.05] tracking-tight text-white md:text-7xl">
+      {/* Content — fits in one viewport height on standard displays */}
+      <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-6xl flex-col px-6 pt-24 md:px-10 md:pt-28">
+        <section className="flex flex-1 flex-col justify-center pb-8">
+          <img
+            src="/img/streamify-logo.svg"
+            alt="Streamify"
+            className="mb-6 h-12 w-auto md:h-14"
+          />
+          <h1 className="max-w-3xl text-4xl font-black leading-[1.05] tracking-tight text-white md:text-6xl">
             Everything you watch.
             <br />
             <span className="bg-gradient-to-r from-red-500 via-rose-400 to-orange-300 bg-clip-text text-transparent">
               One player.
             </span>
           </h1>
-          <p className="mt-6 max-w-xl text-lg text-neutral-300 md:text-xl">
+          <p className="mt-4 max-w-xl text-base text-neutral-300 md:text-lg">
             Live TV, movies, and series — all pulled from your Xtream playlist, rendered the way
             modern streaming should look.
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div className="mt-6 flex flex-wrap gap-3">
             <Button size="lg" onClick={() => history.push('/live/')}>
               <Play className="fill-current" /> Start Watching Live
             </Button>
@@ -86,38 +88,37 @@ export default function MainMenu() {
               Browse Movies
             </Button>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Mode cards */}
-      <section className="relative z-10 mx-auto w-full max-w-6xl px-6 pb-24 md:px-10">
-        <h2 className="mb-6 text-xl font-semibold tracking-tight text-neutral-100">
-          Jump back in
-        </h2>
-        <div className="grid gap-4 md:grid-cols-3">
-          {modes.map((m) => (
-            <button
-              key={m.key}
-              type="button"
-              onClick={() => history.push(m.to)}
-              className="group relative flex aspect-[4/3] flex-col justify-between overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900 p-6 text-left transition-all hover:-translate-y-1 hover:border-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950"
-            >
-              <div
-                className={`pointer-events-none absolute inset-0 bg-gradient-to-br opacity-60 transition-opacity group-hover:opacity-100 ${m.accent}`}
-              />
-              <div className="relative flex items-start justify-between">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-white/10 ring-1 ring-white/15 backdrop-blur">
-                  <m.icon className="size-6 text-white" />
+        <section className="pb-10 md:pb-14">
+          <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-neutral-400">
+            Jump back in
+          </h2>
+          <div className="grid gap-4 md:grid-cols-3">
+            {modes.map((m) => (
+              <button
+                key={m.key}
+                type="button"
+                onClick={() => history.push(m.to)}
+                className="group relative flex aspect-[16/9] flex-col justify-between overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900 p-5 text-left transition-all hover:-translate-y-1 hover:border-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950 md:aspect-[4/3]"
+              >
+                <div
+                  className={`pointer-events-none absolute inset-0 bg-gradient-to-br opacity-60 transition-opacity group-hover:opacity-100 ${m.accent}`}
+                />
+                <div className="relative flex items-start justify-between">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-white/10 ring-1 ring-white/15 backdrop-blur">
+                    <m.icon className="size-5 text-white" />
+                  </div>
                 </div>
-              </div>
-              <div className="relative">
-                <div className="text-2xl font-bold text-white md:text-3xl">{m.title}</div>
-                <div className="mt-1 text-sm text-neutral-300">{m.subtitle}</div>
-              </div>
-            </button>
-          ))}
-        </div>
-      </section>
+                <div className="relative">
+                  <div className="text-xl font-bold text-white md:text-2xl">{m.title}</div>
+                  <div className="mt-0.5 text-xs text-neutral-300 md:text-sm">{m.subtitle}</div>
+                </div>
+              </button>
+            ))}
+          </div>
+        </section>
+      </div>
     </div>
   );
 }

@@ -44,8 +44,10 @@ function App() {
       <Router>
         <Switch>
           <Route>
-            <Route path="/:playingMode/">
+            <Route path="/">
               <NavBar />
+            </Route>
+            <Route path="/:playingMode/">
               <LateralBar />
             </Route>
             <PrivateRoute exact path="/">
